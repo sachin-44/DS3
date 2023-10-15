@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+#define MAX_SIZE 100
+
+// Structure to represent a stack
+struct Stack {
+    int arr[MAX_SIZE];
+    int top;
+};
+
+// Function to initialize the stack
+void initialize(struct Stack *s) {
+    s->top = -1;
+}
+
+// Function to check if the stack is empty
+int isEmpty(struct Stack *s) {
+    return (s->top == -1);
+}
+
+// Function to push an element onto the stack
+void push(struct Stack *s, int value) {
+    if (s->top == MAX_SIZE - 1) {
+        printf("Stack overflow\n");
+        exit(EXIT_FAILURE);
+    }
+    s->arr[++(s->top)] = value;
+}
+
+// Function to pop an element from the stack
+int pop(struct Stack *s) {
+    if (isEmpty(s)) {
+        printf("Stack underflow\n");
+        exit(EXIT_FAILURE);
+    }
+    return s->arr[(s->top)--];
+}
+
+// Function to convert binary to decimal
+int binaryToDecimal(char binary[]) {
+    struct Stack s;
+    initialize(&s);
+
+    int decimal = 0;
+    int exponent = 0;
+
+    // Push each binary digit onto the stack
+    for (int i = 0; binary[i] != '\0'; i++) {
+        if (binary[i] == '0' || binary[i] == '1') {
+            push(&s, binary[i] - '0');
+        } else {
+            printf("Invalid binary digit: %c\n", binary[i]);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    // Pop each digit from the stack and add to decimal
+    while (!isEmpty(&s)) {
+        decimal += pop(&s) * pow(2, exponent);
+        exponent++;
+    }
+
+    return decimal;
+}
+
+int main() {
+    char binary[MAX_SIZE];
+
+    printf("Enter binary number: ");
+    scanf("%s", binary);
+
+    int decimal = binaryToDecimal(binary);
+
+    printf("Decimal equivalent: %d\n", decimal);
+
+    return 0;
+}
