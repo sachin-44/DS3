@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure to represent a stack node
+struct StackNode {
+    int data;
+    struct StackNode* next;
+};
+
+// Function to create a new stack node
+struct StackNode* createNode(int data) {
+    struct StackNode* newNode = (struct StackNode*)malloc(sizeof(struct StackNode));
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to check if the stack is empty
+int isEmpty(struct StackNode* root) {
+    return (root == NULL);
+}
+
+// Function to push a new element onto the stack
+void push(struct StackNode** root, int data) {
+    struct StackNode* newNode = createNode(data);
+    newNode->next = *root;
+    *root = newNode;
+}
+
+// Function to pop an element from the stack
+int pop(struct StackNode** root) {
+    if (isEmpty(*root)) {
+        printf("Stack underflow\n");
+        return -1; // indicating an error
+    }
+    struct StackNode* temp = *root;
+    *root = (*root)->next;
+    int popped = temp->data;
+    free(temp);
+    return popped;
+}
+
+// Function to get the minimum element from the stack
+int getMin(struct StackNode* root) {
+    if (isEmpty(root)) {
+        printf("Stack is empty\n");
+        return -1; // indicating an error
+    }
+    return root->data;
+}
+
+// Main function to demonstrate the program
+int main() {
+    struct StackNode* stack = NULL;
+    struct StackNode* minStack = NULL;
+
+    // Push elements onto the stack
+    push(&stack, 3);
+    push(&stack, 5);
+    push(&stack, 2);
+    push(&stack, 1);
+    push(&stack, 4);
+
+    // Update the minimum stack as elements are pushed
+    while (!isEmpty(stack)) {
+        int current = pop(&stack);
+        if (isEmpty(minStack) || current < getMin(minStack)) {
+            push(&minStack, current);
+        } else {
+            push(&minStack, getMin(minStack));
+        }
+    }
+
+    // The minimum element is now at the top of the minStack
+    printf("The smallest element in the stack is: %d\n", getMin(minStack));
+
+    // Clean up memory
+    while (!isEmpty(minStack)) {
+        pop(&minStack);
+    }
+
+    return 0;
+}
