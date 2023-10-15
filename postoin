@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_SIZE 100
+
+typedef struct {
+    char data[MAX_SIZE];
+    int top;
+} Stack;
+
+void push(Stack *stack, char value) {
+    if (stack->top < MAX_SIZE - 1) {
+        stack->data[++(stack->top)] = value;
+    } else {
+        printf("Stack overflow\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+char pop(Stack *stack) {
+    if (stack->top >= 0) {
+        return stack->data[(stack->top)--];
+    } else {
+        printf("Stack underflow\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+int isOperand(char ch) {
+    return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
+}
+
+void postfixToInfix(char postfix[]) {
+    Stack stack;
+    stack.top = -1;
+
+    int len = strlen(postfix);
+    char infix[MAX_SIZE];
+    int infixIndex = 0;
+
+    for (int i = 0; i < len; i++) {
+        char symbol = postfix[i];
+
+        if (isOperand(symbol)) {
+            push(&stack, symbol);
+        } else {
+            char operand2 = pop(&stack);
+            char operand1 = pop(&stack);
+
+            infix[infixIndex++] = '(';
+            infix[infixIndex++] = operand1;
+            infix[infixIndex++] = symbol;
+            infix[infixIndex++] = operand2;
+            infix[infixIndex++] = ')';
+            push(&stack, infix[infixIndex - 1]);  // Push the result back to the stack
+        }
+    }
+
+    infix[infixIndex] = '\0';
+    printf("Infix expression: %s\n", infix);
+}
+
+int main() {
+    char postfix[MAX_SIZE];
+
+    printf("Enter a postfix expression: ");
+    scanf("%s", postfix);
+
+    postfixToInfix(postfix);
+
+    return 0;
+}
