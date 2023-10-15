@@ -1,1 +1,75 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_SIZE 100
+
+typedef struct {
+    char data[MAX_SIZE];
+    int top;
+} Stack;
+
+void push(Stack *stack, char value) {
+    if (stack->top < MAX_SIZE - 1) {
+        stack->data[++(stack->top)] = value;
+    } else {
+        printf("Stack overflow\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+char pop(Stack *stack) {
+    if (stack->top >= 0) {
+        return stack->data[(stack->top)--];
+    } else {
+        printf("Stack underflow\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+int isOperator(char ch) {
+    return ch == '+' || ch == '-' || ch == '*' || ch == '/';
+}
+
+void prefixToInfix(char prefix[]) {
+    Stack stack;
+    stack.top = -1;
+
+    int len = strlen(prefix);
+    char infix[MAX_SIZE * 2];  // Infix can be longer than prefix
+    int infixIndex = 0;
+
+    for (int i = len - 1; i >= 0; i--) {
+        char symbol = prefix[i];
+
+        if (isOperator(symbol)) {
+            char operand1 = pop(&stack);
+            char operand2 = pop(&stack);
+
+            // Construct the infix expression
+            infix[infixIndex++] = '(';
+            infix[infixIndex++] = operand1;
+            infix[infixIndex++] = symbol;
+            infix[infixIndex++] = operand2;
+            infix[infixIndex++] = ')';
+            push(&stack, infix[infixIndex - 1]);  // Push the result back to the stack
+        } else {
+            push(&stack, symbol);
+        }
+    }
+
+    infix[infixIndex] = '\0';
+    printf("Infix expression: %s\n", infix);
+}
+
+int main() {
+    char prefix[MAX_SIZE];
+
+    printf("Enter a prefix expression: ");
+    scanf("%s", prefix);
+
+    prefixToInfix(prefix);
+
+    return 0;
+}
 
