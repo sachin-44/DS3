@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_SIZE 100
+
+// Structure to represent a stack
+struct Stack {
+    int arr[MAX_SIZE];
+    int top;
+};
+
+// Function to initialize the stack
+void initialize(struct Stack *s) {
+    s->top = -1;
+}
+
+// Function to check if the stack is empty
+int isEmpty(struct Stack *s) {
+    return (s->top == -1);
+}
+
+// Function to push an element onto the stack
+void push(struct Stack *s, int value) {
+    if (s->top == MAX_SIZE - 1) {
+        printf("Stack overflow\n");
+        exit(EXIT_FAILURE);
+    }
+    s->arr[++(s->top)] = value;
+}
+
+// Function to pop an element from the stack
+int pop(struct Stack *s) {
+    if (isEmpty(s)) {
+        printf("Stack underflow\n");
+        exit(EXIT_FAILURE);
+    }
+    return s->arr[(s->top)--];
+}
+
+// Function to find the largest element in the stack
+int findLargestElement(struct Stack *s) {
+    if (isEmpty(s)) {
+        printf("Stack is empty\n");
+        exit(EXIT_FAILURE);
+    }
+
+    int largest = s->arr[0];
+
+    for (int i = 1; i <= s->top; i++) {
+        if (s->arr[i] > largest) {
+            largest = s->arr[i];
+        }
+    }
+
+    return largest;
+}
+
+int main() {
+    struct Stack s;
+    initialize(&s);
+
+    // Push some elements onto the stack
+    push(&s, 5);
+    push(&s, 3);
+    push(&s, 8);
+    push(&s, 1);
+    push(&s, 7);
+
+    // Find and print the largest element in the stack
+    int largest = findLargestElement(&s);
+    printf("Largest element in the stack: %d\n", largest);
+
+    return 0;
+}
