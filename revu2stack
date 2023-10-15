@@ -1,0 +1,81 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_SIZE 100
+
+typedef struct {
+    int data[MAX_SIZE];
+    int top;
+} Stack;
+
+void push(Stack *stack, int value) {
+    if (stack->top < MAX_SIZE - 1) {
+        stack->data[++(stack->top)] = value;
+    } else {
+        printf("Stack overflow\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+int pop(Stack *stack) {
+    if (stack->top >= 0) {
+        return stack->data[(stack->top)--];
+    } else {
+        printf("Stack underflow\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+int isEmpty(Stack *stack) {
+    return stack->top == -1;
+}
+
+void transfer(Stack *source, Stack *destination) {
+    while (!isEmpty(source)) {
+        push(destination, pop(source));
+    }
+}
+
+void reverseStack(Stack *stack) {
+    Stack temp1, temp2;
+    temp1.top = temp2.top = -1;
+
+    // Transfer elements from the original stack to temp1
+    transfer(stack, &temp1);
+
+    // Transfer elements from temp1 to temp2 (reversing order)
+    transfer(&temp1, &temp2);
+
+    // Transfer elements from temp2 back to the original stack
+    transfer(&temp2, stack);
+}
+
+void printStack(Stack *stack) {
+    printf("Stack: ");
+    for (int i = 0; i <= stack->top; ++i) {
+        printf("%d ", stack->data[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    Stack originalStack;
+    originalStack.top = -1;
+
+    // Push some elements onto the original stack
+    push(&originalStack, 1);
+    push(&originalStack, 2);
+    push(&originalStack, 3);
+    push(&originalStack, 4);
+
+    printf("Original ");
+    printStack(&originalStack);
+
+    // Reverse the stack
+    reverseStack(&originalStack);
+
+    printf("Reversed ");
+    printStack(&originalStack);
+
+    return 0;
+}
