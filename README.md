@@ -1,165 +1,208 @@
-#include<stdio.h>
-#include<string.h>
-#include<math.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#define BLANK ' '
-#define TAB '\t'
-#define MAX 50
+struct Node {
+    int data;
+    struct Node *next;
+};
 
-void push(long int symbol);
-long int pop();
-void infix_to_postfix();
-long int eval_post();
-int priority(char symbol);
-int isEmpty();
-int white_space(char );
+struct Node *head = NULL;
 
-char infix[MAX], postfix[MAX];
-long int stack[MAX];
-int top;
+void display();
+void insertAtBeginning(int value);
+void insertAtEnd(int value);
+void insertAtPosition(int value, int position);
+void deleteFromBeginning();
+void deleteFromEnd();
+void deleteFromPosition(int position);
 
-int main()
-{
-        long int value;
-        top=-1;
-        printf("Enter infix : ");
-        gets(infix);
-        infix_to_postfix();
-        printf("Postfix : %s\n",postfix);
-        value=eval_post();
-        printf("Value of expression : %ld\n",value);
+int main() {
+    int choice, value, position;
 
-        return 0;
+    while (1) {
+        printf("\nLinked List Operations:\n");
+        printf("a. Display\n");
+        printf("b. Insert at Beginning\n");
+        printf("c. Insert at End\n");
+        printf("d. Insert at a specified Position\n");
+        printf("e. Delete from Beginning\n");
+        printf("f. Delete from End\n");
+        printf("g. Delete from a specified Position\n");
+        printf("h. Exit\n");
 
-}/*End of main()*/
+        printf("Enter your choice: ");
+        scanf(" %c", &choice);
 
-void infix_to_postfix()
-{
-        unsigned int i,p=0;
-        char next;
-        char symbol;
-        for(i=0;i<strlen(infix);i++)
-        {
-                symbol=infix[i];
-                if(!white_space(symbol))
-                {
-                        switch(symbol)
-                        {
-                        case '(':
-                                push(symbol);
-                                break;
-                        case ')':
-                                while((next=pop())!='(')
-                                        postfix[p++] = next;
-                                break;
-                        case '+':
-                        case '-':
-                        case '*':
-                        case '/':
-                        case '%':
-                        case '^':
-                                while( !isEmpty( ) &&  priority(stack[top])>= priority(symbol) )
-                                        postfix[p++]=pop();
-                                push(symbol);
-                                break;
-                        default: /*if an operand comes*/
-                             postfix[p++]=symbol;
-                        }
-                }
+        switch (choice) {
+            case 'a':
+                display();
+                break;
+            case 'b':
+                printf("Enter the value to insert: ");
+                scanf("%d", &value);
+                insertAtBeginning(value);
+                break;
+            case 'c':
+                printf("Enter the value to insert: ");
+                scanf("%d", &value);
+                insertAtEnd(value);
+                break;
+            case 'd':
+                printf("Enter the value to insert: ");
+                scanf("%d", &value);
+                printf("Enter the position to insert at: ");
+                scanf("%d", &position);
+                insertAtPosition(value, position);
+                break;
+            case 'e':
+                deleteFromBeginning();
+                break;
+            case 'f':
+                deleteFromEnd();
+                break;
+            case 'g':
+                printf("Enter the position to delete from: ");
+                scanf("%d", &position);
+                deleteFromPosition(position);
+                break;
+            case 'h':
+                exit(0);
+            default:
+                printf("Invalid choice! Please enter a valid option.\n");
         }
-        while(!isEmpty( ))
-                postfix[p++]=pop();
-        postfix[p]='\0'; /*End postfix with'\0' to make it a string*/
-}/*End of infix_to_postfix()*/
+    }
 
-/*This function returns the priority of the operator*/
-int priority(char symbol)
-{
-        switch(symbol)
-        {
-        case '(':
-                return 0;
-        case '+':
-        case '-':
-                return 1;
-        case '*':
-        case '/':
-        case '%':
-                return 2;
-        case '^':
-                return 3;
-        default :
-                return 0;
+    return 0;
+}
+
+void display() {
+    struct Node *temp = head;
+
+    if (temp == NULL) {
+        printf("The list is empty.\n");
+        return;
+    }
+
+    printf("Linked List: ");
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+void insertAtBeginning(int value) {
+    struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
+    newNode->data = value;
+    newNode->next = head;
+    head = newNode;
+    printf("%d inserted at the beginning.\n", value);
+}
+
+void insertAtEnd(int value) {
+    struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
+    newNode->data = value;
+    newNode->next = NULL;
+
+    if (head == NULL) {
+        head = newNode;
+    } else {
+        struct Node *temp = head;
+        while (temp->next != NULL) {
+            temp = temp->next;
         }
-}/*End of priority()*/
+        temp->next = newNode;
+    }
 
-void push(long int symbol)
-{
-        if(top>MAX)
-        {
-                printf("Stack overflow\n");
-                exit(1);
+    printf("%d inserted at the end.\n", value);
+}
+
+void insertAtPosition(int value, int position) {
+    struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
+    newNode->data = value;
+
+    if (position == 1) {
+        newNode->next = head;
+        head = newNode;
+    } else {
+        struct Node *temp = head;
+        for (int i = 1; i < position - 1 && temp != NULL; i++) {
+            temp = temp->next;
         }
-        stack[++top]=symbol;
-}/*End of push()*/
 
-long int pop()
-{
-        if( isEmpty() )
-        {
-                printf("Stack underflow\n");
-                exit(1);
+        if (temp == NULL) {
+            printf("Invalid position. Insertion failed.\n");
+            free(newNode);
+            return;
         }
-        return (stack[top--]);
-}/*End of pop()*/
-int isEmpty()
-{
-        if(top==-1)
-                return 1;
-        else
-                return 0;
-}/*End of isEmpty()*/
 
-int white_space(char symbol)
-{
-        if( symbol == BLANK || symbol == TAB )
-                return 1;
-        else
-                return 0;
-}/*End of white_space()*/
+        newNode->next = temp->next;
+        temp->next = newNode;
+    }
 
-long int eval_post()
-{
-        long int a,b,temp,result;
-        unsigned int i;
+    printf("%d inserted at position %d.\n", value, position);
+}
 
-        for(i=0;i<strlen(postfix);i++)
-        {
-                if(postfix[i]<='9' && postfix[i]>='0')
-                        push(postfix[i]-'0');
-                else
-                {
-                        a=pop();
-                        b=pop();
-                        switch(postfix[i])
-                        {
-                        case '+':
-                                temp=b+a; break;
-                        case '-':
-                                temp=b-a;break;
-                        case '*':
-                                temp=b*a;break;
-                        case '/':
-                                temp=b/a;break;
-                        case '%':
-                                temp=b%a;break;
-                        case '^':
-                                temp=pow(b,a);
-                        }
-                        push(temp);
-                }
+void deleteFromBeginning() {
+    if (head == NULL) {
+        printf("The list is empty. Deletion failed.\n");
+        return;
+    }
+
+    struct Node *temp = head;
+    head = head->next;
+    free(temp);
+
+    printf("Deleted from the beginning.\n");
+}
+
+void deleteFromEnd() {
+    if (head == NULL) {
+        printf("The list is empty. Deletion failed.\n");
+        return;
+    }
+
+    if (head->next == NULL) {
+        free(head);
+        head = NULL;
+    } else {
+        struct Node *temp = head;
+        while (temp->next->next != NULL) {
+            temp = temp->next;
         }
-        result=pop();
-        return result;
+
+        free(temp->next);
+        temp->next = NULL;
+    }
+
+    printf("Deleted from the end.\n");
+}
+
+void deleteFromPosition(int position) {
+    if (head == NULL) {
+        printf("The list is empty. Deletion failed.\n");
+        return;
+    }
+
+    if (position == 1) {
+        struct Node *temp = head;
+        head = head->next;
+        free(temp);
+    } else {
+        struct Node *temp = head;
+        for (int i = 1; i < position - 1 && temp != NULL; i++) {
+            temp = temp->next;
+        }
+
+        if (temp == NULL || temp->next == NULL) {
+            printf("Invalid position. Deletion failed.\n");
+            return;
+        }
+
+        struct Node *nodeToDelete = temp->next;
+        temp->next = temp->next->next;
+        free(nodeToDelete);
+    }
+
+    printf("Deleted from position %d.\n", position);
 }
